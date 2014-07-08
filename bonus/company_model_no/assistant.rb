@@ -2,6 +2,8 @@
 require 'roo'
 require 'writeexcel'
 require 'pry'
+require 'pry-nav'
+require 'pry-remote'
 
 todo_excel = ARGV[0]
 data_source_excel =ARGV[1] 
@@ -17,11 +19,8 @@ data_source.default_sheet = data_source.sheets[0]
 todo_lst = []
 data_source_lst = []
 data_source_hash = {}
-
 start_time = Time.now
-
-start_time = Time.now
-# read todo excel
+# read todo 
 (todo.first_row+1).upto(todo.last_row) do |line_no|
   todo_lst << todo.row(line_no)
 end
@@ -39,8 +38,6 @@ todo_lst.each do | todo |
 end
 
 p "Elapsed #{Time.now - start_time} sec"
-
-
 #export excel 
 wb = WriteExcel.new('export.xls')
 ws = wb.add_worksheet
