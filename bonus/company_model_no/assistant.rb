@@ -1,12 +1,16 @@
-# encoding: utf-8
 require 'roo'
 require 'writeexcel'
 require 'pry'
-require 'pry-nav'
 require 'pry-remote'
+require 'pry-stack_explorer'
+require 'awesome_print'
+# DEFINE COLUMN POSITION
+VNPN_TODO_COL = 4
+#
+VNPN_DATA_SOURCE = 1
 
 todo_excel = ARGV[0]
-data_source_excel =ARGV[1] 
+data_source_excel =ARGV[1]
 #read Excel
 todo = Roo::Excel.new(todo_excel)
 data_source = Roo::Excel.new(data_source_excel)
@@ -15,31 +19,30 @@ data_source = Roo::Excel.new(data_source_excel)
 todo.default_sheet = todo.sheets[0]
 data_source.default_sheet = data_source.sheets[0]
 
-# wehre to store
+# where to store
 todo_lst = []
 data_source_lst = []
 data_source_hash = {}
 start_time = Time.now
-# read todo 
+# read todo
 (todo.first_row+1).upto(todo.last_row) do |line_no|
   todo_lst << todo.row(line_no)
 end
 # read data_source excel
 (data_source.first_row+7).upto(data_source.last_row) do |line_no|
-  key = data_source.row(line_no)[1]
+  delta_key = data_source.row(line_no)[VNPN_DATA_SOURCE].to_s
   value = data_source.row(line_no)[-2]
-  data_source_hash[key] = value
+  data_source_hash[delta_key] = value
 end
-
 #each todo list
 todo_lst.each do | todo |
-  sn = todo[1]
+  sn = todo[VNPN_TODO_COL]
   todo << data_source_hash[sn]
 end
 
 p "Elapsed #{Time.now - start_time} sec"
-#export excel 
-wb = WriteExcel.new('export.xls')
+#export excel
+wb = WriteExcel.new("#{Date.today.to_s}-export.xls")
 ws = wb.add_worksheet
 
 todo_lst.each.with_index(0) do |todo, i|
